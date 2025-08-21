@@ -15,7 +15,8 @@ def ffmpeg_matrix_for(kind: str) -> str:
     # B' = 0.0     R + 0.24167 G + 0.75833 B
     if kind == "protanopia":
         # return "colorchannelmixer=0.56667:0.43333:0:0:0.55833:0.44167:0:0:0:0.24167:0.75833:0"
-        return "colorchannelmixer=0.950:0.050:0:0:0:0.43333:0.56667:0:0:0.475:0.525:0"
+        # return "colorchannelmixer=0.950:0.050:0:0:0:0.43333:0.56667:0:0:0.475:0.525:0"
+        return "colorchannelmixer=0.625:0.375:0:0:0.700:0.300:0:0:0:0.300:0.700:0
 
     # --- Deuteranopia (approx) ---
     # R' = 0.625 R + 0.375 G + 0.0 B
