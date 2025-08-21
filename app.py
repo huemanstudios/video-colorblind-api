@@ -3,6 +3,8 @@ import shutil
 import subprocess
 import uuid
 
+import asyncio
+
 from fastapi import FastAPI, File, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -38,6 +40,16 @@ def cleanup_paths(*paths):
             pass
 
 
+async def delayed_cleanup(delay, *paths):
+    await asyncio.sleep(delay)  # wait before deleting
+    for p in paths:
+        try:
+            if os.path.isfile(p):
+                os.remove(p)
+        except Exception:
+            pass
+
+
 @app.post("/process-video")
 async def process_video(
     background_tasks: BackgroundTasks,
@@ -63,6 +75,9 @@ async def process_video(
     ccm = ffmpeg_matrix_for(filter)
     vf = ccm if ccm else "null"
 
+
+
+    # Use this if paid version, so that hd videos can be processed
     # cmd = [
     #     "ffmpeg", 
     #     "-y",
@@ -75,6 +90,10 @@ async def process_video(
     #     "-c:a", "copy",
     #     out_path,
     # ]
+
+    
+
+    # Currently downscales the video because restrained within >512 mb ram processing power
     cmd = [
     "ffmpeg",
     "-y",
@@ -97,7 +116,7 @@ async def process_video(
         return {"ok": False, "error": "ffmpeg_failed", "detail": err[:4000]}
 
     # Schedule cleanup of temp files
-    background_tasks.add_task(cleanup_paths, in_path, out_path)
+    background_tasks.add_task(delayed_cleanup, 1200, in_path, out_path)  # 1200 sec = 20 min
 
     # ✅ Return URL instead of raw file
     base_url = os.getenv("BASE_URL", "https://video-colorblind-api.onrender.com")
