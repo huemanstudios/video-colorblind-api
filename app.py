@@ -56,7 +56,7 @@ async def process_video(
     file: UploadFile = File(...),
     # filter: str = Query("tritanopia", regex="^(protanopia|deuteranopia|tritanopia|identity)$"),
     
-    filter: str = Query("tritanopia"),
+    filter: str = Query("tritanopia", regex="^(protanopia|deuteranopia|tritanopia|identity)$"),
     crf: int = Query(23, ge=18, le=32),  # quality setting (lower = better)
     preset: str = Query("veryfast")      # x264 speed/size tradeoff
     
@@ -98,17 +98,32 @@ async def process_video(
 
     
 
-    # Currently downscales the video because restrained within >512 mb ram processing power
+    # # Currently downscales the video because restrained within >512 mb ram processing power
+    # cmd = [
+    # "ffmpeg",
+    # "-y",
+    # "-i", in_path,
+    # "-vf", f"{vf},scale=320:-1",   # shrink to 320px width
+    # "-c:v", "libx264",
+    # "-preset", "ultrafast",
+    # "-crf", "30",                   # reduce quality, reduce RAM
+    # "-movflags", "+faststart",
+    # "-an",                          # strip audio (saves RAM)
+    # out_path,
+    # ]
+
+
+    #balanced
     cmd = [
     "ffmpeg",
     "-y",
     "-i", in_path,
-    "-vf", f"{vf},scale=320:-1",   # shrink to 320px width
+    "-vf", f"{vf},scale=720:-1",  # shrink to 720p instead of 320p
     "-c:v", "libx264",
-    "-preset", "ultrafast",
-    "-crf", "30",                   # reduce quality, reduce RAM
+    "-preset", "slow",            # slower, less RAM
+    "-crf", "28",                 # balanced quality
     "-movflags", "+faststart",
-    "-an",                          # strip audio (saves RAM)
+    "-c:a", "aac", "-b:a", "96k", # keep audio, low bitrate
     out_path,
     ]
 
@@ -126,7 +141,7 @@ async def process_video(
     # ✅ Return URL instead of raw file
     base_url = os.getenv("BASE_URL", "https://video-colorblind-api.onrender.com")
     file_url = f"{base_url}/files/{os.path.basename(out_path)}"
-    return JSONResponse({"url": file_url})
+    return JSONResponse({"url": file_url, "filter": filter})
 
 
 @app.get("/")
