@@ -3,3 +3,4 @@ services:
     name: video-colorblind-api
     env: docker
     plan: free
+    autoDeploy: true
