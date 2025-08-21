@@ -63,17 +63,29 @@ async def process_video(
     ccm = ffmpeg_matrix_for(filter)
     vf = ccm if ccm else "null"
 
+    # cmd = [
+    #     "ffmpeg", 
+    #     "-y",
+    #     "-i", in_path,
+    #     "-vf", vf,
+    #     "-c:v", "libx264",
+    #     "-preset", preset,
+    #     "-crf", str(crf),
+    #     "-movflags", "+faststart",
+    #     "-c:a", "copy",
+    #     out_path,
+    # ]
     cmd = [
-        "ffmpeg", 
-        "-y",
-        "-i", in_path,
-        "-vf", vf,
-        "-c:v", "libx264",
-        "-preset", preset,
-        "-crf", str(crf),
-        "-movflags", "+faststart",
-        "-c:a", "copy",
-        out_path,
+    "ffmpeg",
+    "-y",
+    "-i", in_path,
+    "-vf", f"{vf},scale=320:-1",   # shrink to 320px width
+    "-c:v", "libx264",
+    "-preset", "ultrafast",
+    "-crf", "30",                   # reduce quality, reduce RAM
+    "-movflags", "+faststart",
+    "-an",                          # strip audio (saves RAM)
+    out_path,
     ]
 
     # Run ffmpeg
