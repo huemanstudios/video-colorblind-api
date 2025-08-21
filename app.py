@@ -121,7 +121,7 @@ async def process_video(
         return {"ok": False, "error": "ffmpeg_failed", "detail": err[:4000]}
 
     # Schedule cleanup of temp files
-    background_tasks.add_task(delayed_cleanup, 1200, in_path, out_path)  # 1200 sec = 20 min
+    background_tasks.add_task(delayed_cleanup, 120, in_path, out_path)  # 1200 sec = 20 min
 
     # ✅ Return URL instead of raw file
     base_url = os.getenv("BASE_URL", "https://video-colorblind-api.onrender.com")
