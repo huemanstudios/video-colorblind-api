@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: video-colorblind-api
+    env: docker
+    plan: free
