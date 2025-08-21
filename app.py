@@ -54,9 +54,13 @@ async def delayed_cleanup(delay, *paths):
 async def process_video(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    filter: str = Query("tritanopia", regex="^(protanopia|deuteranopia|tritanopia|identity)$"),
+    # filter: str = Query("tritanopia", regex="^(protanopia|deuteranopia|tritanopia|identity)$"),
+    
+    filter: str = Query("tritanopia"),
     crf: int = Query(23, ge=18, le=32),  # quality setting (lower = better)
     preset: str = Query("veryfast")      # x264 speed/size tradeoff
+    print(f"DEBUG: Selected filter = {filter}")
+
 ):
     """
     Accepts a video via multipart/form-data and returns JSON with a URL to the processed MP4. 
