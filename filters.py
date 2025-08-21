@@ -23,8 +23,7 @@ def ffmpeg_matrix_for(kind: str) -> str:
     # G' = 0.700 R + 0.300 G + 0.0 B
     # B' = 0.0   R + 0.300 G + 0.700 B
     if kind == "deuteranopia":
-        # return "colorchannelmixer=0.625:0.375:0:0:0.700:0.300:0:0:0:0.300:0.700:0"
-        return "colorchannelmixer=0.950:0.050:0:0:0:0.43333:0.56667:0:0:0.475:0.525:0"
+        return "colorchannelmixer=0.625:0.375:0:0:0.700:0.300:0:0:0:0.300:0.700:0"
 
     # --- Tritanopia (approx) ---
     # R' = 0.950 R + 0.050 G + 0.0 B
